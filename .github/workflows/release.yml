@@ -33,7 +33,7 @@ jobs:
       - name: Pack the Claude Desktop extension
         run: npx -y @anthropic-ai/mcpb@2.1.2 pack . "dist/cse-mcp-${GITHUB_REF_NAME#v}.mcpb"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
