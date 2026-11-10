@@ -1,0 +1,49 @@
+{
+  "manifest_version": "0.4",
+  "name": "cse-mcp",
+  "display_name": "CSE Market Data",
+  "version": "0.1.0",
+  "description": "Live Colombo Stock Exchange (Sri Lanka) prices, indices, sectors and announcements for Claude.",
+  "long_description": "Ask Claude about the Colombo Stock Exchange and get answers built on live data from the public cse.lk API: market status, ASPI and S&P SL20, top movers, any stock's price and history, sector indices, foreign flows, and company announcements with PDF links.\n\nUnofficial and not affiliated with the Colombo Stock Exchange. Market data, not investment advice.",
+  "author": {
+    "name": "lxnid",
+    "url": "https://github.com/lxnid"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lxnid/cse-mcp"
+  },
+  "homepage": "https://github.com/lxnid/cse-mcp",
+  "documentation": "https://github.com/lxnid/cse-mcp#readme",
+  "support": "https://github.com/lxnid/cse-mcp/issues",
+  "icon": "assets/icon.png",
+  "server": {
+    "type": "uv",
+    "entry_point": "src/cse_mcp/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "--directory", "${__dirname}", "--frozen", "--no-dev", "cse-mcp"]
+    }
+  },
+  "tools": [
+    { "name": "get_market_overview", "description": "Market status, ASPI, S&P SL20 and today's turnover" },
+    { "name": "get_top_movers", "description": "Today's top gainers, losers or most active stocks" },
+    { "name": "list_stocks", "description": "Search and rank every listed stock" },
+    { "name": "get_stock", "description": "Full live profile of one stock" },
+    { "name": "get_price_history", "description": "Stock price history from today to 1 year" },
+    { "name": "get_trades_by_price", "description": "Today's volume at each price level, with VWAP" },
+    { "name": "get_sector_indices", "description": "All S&P/CSE sector indices" },
+    { "name": "get_index_history", "description": "ASPI, S&P SL20 or sector index history" },
+    { "name": "get_market_daily_summary", "description": "Foreign flows, market P/E, P/BV and dividend yield" },
+    { "name": "get_announcements", "description": "Dividends, financial statements, circulars and notices" }
+  ],
+  "keywords": ["colombo stock exchange", "cse", "sri lanka", "stocks", "market data", "aspi"],
+  "license": "MIT",
+  "privacy_policies": ["https://github.com/lxnid/cse-mcp/blob/main/PRIVACY.md"],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  }
+}

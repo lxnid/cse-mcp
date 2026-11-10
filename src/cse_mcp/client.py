@@ -7,11 +7,15 @@ messages); `server.py` turns the raw JSON into tidy MCP tool results.
 
 from __future__ import annotations
 
+import logging
 import time
 from typing import Any
 
 import httpx
 from mcp.server.mcpserver.exceptions import ToolError
+
+# httpx logs every request at INFO, which floods the AI app's MCP log.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 BASE_URL = "https://www.cse.lk/api/"
 CDN_URL = "https://cdn.cse.lk/cmt/"

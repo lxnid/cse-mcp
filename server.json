@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.lxnid/cse-mcp",
+  "title": "CSE Market Data",
+  "description": "Live Colombo Stock Exchange (Sri Lanka) prices, indices, sectors and announcements.",
+  "websiteUrl": "https://github.com/lxnid/cse-mcp",
+  "repository": {
+    "url": "https://github.com/lxnid/cse-mcp",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/lxnid/cse-mcp/main/assets/icon.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "cse-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

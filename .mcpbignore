@@ -1,0 +1,20 @@
+# Only the server itself goes into the .mcpb bundle.
+.git/
+.github/
+.claude-plugin/
+plugin/
+tests/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.mcpb
+.DS_Store
+.python-version
+server.json
+CONTRIBUTING.md
+CHANGELOG.md
+SECURITY.md
+scripts/
+assets/icon.svg

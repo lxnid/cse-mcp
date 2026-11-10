@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "cse": {
+      "command": "uvx",
+      "args": ["cse-mcp==0.1.0"]
+    }
+  }
+}

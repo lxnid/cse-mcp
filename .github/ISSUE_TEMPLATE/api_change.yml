@@ -1,0 +1,18 @@
+name: 🔧 cse.lk API changed
+description: An endpoint moved, renamed a field, or started returning errors
+labels: [api-change]
+body:
+  - type: input
+    id: endpoint
+    attributes:
+      label: Endpoint
+      placeholder: e.g. https://www.cse.lk/api/companyInfoSummery
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What changed?
+      description: Paste the new response or error (trim long JSON).
+    validations:
+      required: true

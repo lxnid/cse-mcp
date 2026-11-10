@@ -1,0 +1,18 @@
+{
+  "name": "cse-mcp",
+  "displayName": "CSE Market Data (unofficial)",
+  "version": "0.1.0",
+  "description": "Live Colombo Stock Exchange (Sri Lanka) prices, indices, sectors and announcements, plus a market-analyst skill.",
+  "author": {
+    "name": "lxnid",
+    "url": "https://github.com/lxnid"
+  },
+  "homepage": "https://github.com/lxnid/cse-mcp",
+  "repository": "https://github.com/lxnid/cse-mcp",
+  "license": "MIT",
+  "keywords": ["colombo-stock-exchange", "cse", "sri-lanka", "stocks", "market-data"],
+  "icon": "./icon.png",
+  "documentationUrl": "https://github.com/lxnid/cse-mcp#readme",
+  "supportUrl": "https://github.com/lxnid/cse-mcp/issues",
+  "privacyPolicyUrl": "https://github.com/lxnid/cse-mcp/blob/main/PRIVACY.md"
+}

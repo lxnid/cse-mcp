@@ -1,0 +1,17 @@
+{
+  "name": "cse-mcp",
+  "owner": {
+    "name": "lxnid",
+    "url": "https://github.com/lxnid"
+  },
+  "description": "Live Colombo Stock Exchange market data for Claude.",
+  "plugins": [
+    {
+      "name": "cse-mcp",
+      "source": "./plugin",
+      "description": "Live CSE (Sri Lanka) prices, indices, sectors and announcements, plus a market-analyst skill.",
+      "category": "finance",
+      "tags": ["stocks", "sri-lanka", "market-data"]
+    }
+  ]
+}

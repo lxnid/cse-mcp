@@ -1,0 +1,91 @@
+# Push a tag like v0.2.0 and this publishes everywhere:
+#   PyPI  ->  GitHub Release (.mcpb + wheel)  ->  MCP Registry
+# One-time setup is described in CONTRIBUTING.md ("Releasing").
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Check the tag matches the project version
+        run: test "$(uv version --short)" = "${GITHUB_REF_NAME#v}"
+
+      - name: Test (includes the version-consistency check)
+        run: uv run --frozen pytest
+
+      - name: Build wheel and sdist
+        run: uv build
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pack the Claude Desktop extension
+        run: npx -y @anthropic-ai/mcpb@2.1.2 pack . "dist/cse-mcp-${GITHUB_REF_NAME#v}.mcpb"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi # add required reviewers to this environment for a manual approval gate
+    permissions:
+      id-token: write # PyPI trusted publishing: no API token stored anywhere
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: astral-sh/setup-uv@v6
+      - run: uv publish --trusted-publishing always dist/*.whl dist/*.tar.gz
+
+  github-release:
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes
+
+  mcp-registry:
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # registry login via GitHub OIDC
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Wait until PyPI serves the new version
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf "https://pypi.org/pypi/cse-mcp/${GITHUB_REF_NAME#v}/json" > /dev/null && exit 0
+            sleep 10
+          done
+          echo "PyPI never showed the new version" && exit 1
+
+      - name: Install mcp-publisher
+        run: curl -sL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.9/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+
+      - run: ./mcp-publisher login github-oidc
+      - run: ./mcp-publisher publish

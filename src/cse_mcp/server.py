@@ -13,8 +13,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Literal
 
 from mcp.server.mcpserver import MCPServer
-from mcp.types import ToolAnnotations
+from mcp.types import Icon, ToolAnnotations
 
+from cse_mcp import __version__
 from cse_mcp.client import CDN_URL, CSEClient, CSEError, document_url, normalize_symbol
 
 SL_TZ = timezone(timedelta(hours=5, minutes=30), "Asia/Colombo")  # Sri Lanka has no DST
@@ -32,10 +33,23 @@ Live data from the Colombo Stock Exchange (CSE), Sri Lanka, via the public cse.l
 - This is market data, not investment advice. Mention the data timestamp when it matters.
 """
 
-mcp = MCPServer("cse-mcp", instructions=INSTRUCTIONS)
+REPO_URL = "https://github.com/lxnid/cse-mcp"
+
+mcp = MCPServer(
+    "cse-mcp",
+    title="CSE Market Data",
+    version=__version__,
+    instructions=INSTRUCTIONS,
+    website_url=REPO_URL,
+    icons=[Icon(src=f"{REPO_URL}/raw/main/assets/icon.png", mime_type="image/png", sizes=["512x512"])],
+)
 client = CSEClient()
 
-READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=True)
+
+def cse_tool(title: str):
+    """Register a read-only tool. Every tool here only reads public market data."""
+    hints = ToolAnnotations(title=title, read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=True)
+    return mcp.tool(title=title, annotations=hints)
 
 
 # --------------------------------------------------------------------------- helpers
@@ -91,7 +105,7 @@ async def _company(symbol: str) -> dict[str, Any]:
 # --------------------------------------------------------------------------- market-wide tools
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Market overview")
 async def get_market_overview() -> dict[str, Any]:
     """Snapshot of the whole market right now: open/closed status, the ASPI and
     S&P SL20 indices (value, change, day range) and today's turnover, volume and trades.
@@ -130,7 +144,7 @@ async def get_market_overview() -> dict[str, Any]:
     }
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Top movers")
 async def get_top_movers(
     kind: Literal["gainers", "losers", "most_active"] = "gainers",
     limit: int = 10,
@@ -156,7 +170,7 @@ async def get_top_movers(
     return {"kind": kind, "stocks": stocks}
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Search and rank stocks")
 async def list_stocks(
     query: str = "",
     sort_by: Literal["turnover", "change_pct", "market_cap", "volume", "symbol"] = "turnover",
@@ -208,7 +222,7 @@ async def list_stocks(
     return {"matches": len(rows), "returned": len(stocks), "stocks": stocks}
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Sector indices")
 async def get_sector_indices() -> dict[str, Any]:
     """All CSE sector indices (S&P/CSE industry groups such as Banks, Energy,
     Capital Goods) with today's value, change and activity, best performers first.
@@ -237,7 +251,7 @@ async def get_sector_indices() -> dict[str, Any]:
     return {"sectors": sectors}
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Daily market summary")
 async def get_market_daily_summary() -> dict[str, Any]:
     """End-of-day style market statistics: turnover, foreign vs domestic buying
     and selling (net foreign flow), market cap, market P/E, P/BV and dividend
@@ -280,7 +294,7 @@ async def get_market_daily_summary() -> dict[str, Any]:
 # --------------------------------------------------------------------------- single-stock tools
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Stock profile")
 async def get_stock(symbol: str) -> dict[str, Any]:
     """Full live profile of one stock: price and change, today's range and
     volume, week/month/YTD/52-week/all-time highs and lows, market cap,
@@ -347,7 +361,7 @@ async def get_stock(symbol: str) -> dict[str, Any]:
     )
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Stock price history")
 async def get_price_history(symbol: str, period: Period = "1m", max_points: int = 120) -> dict[str, Any]:
     """Price history for one stock. period: "today" (15-minute bars), "1w",
     "1m", "3m" or "1y" (daily bars). Includes a start/end/change/high/low
@@ -415,7 +429,7 @@ def _intraday_bars(trades: list[dict[str, Any]], minutes: int) -> list[dict[str,
     return [_clean(b) for b in bars.values()]
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Today's trades by price")
 async def get_trades_by_price(symbol: str) -> dict[str, Any]:
     """Today's trading in one stock broken down by price level: how many shares
     and trades went through at each price, plus the volume-weighted average
@@ -447,7 +461,7 @@ async def get_trades_by_price(symbol: str) -> dict[str, Any]:
 # --------------------------------------------------------------------------- indices
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Index history")
 async def get_index_history(index: str = "ASPI", period: Period = "1m", max_points: int = 120) -> dict[str, Any]:
     """History of a market or sector index. `index` can be "ASPI", "S&P SL20",
     a sector name/symbol from get_sector_indices (e.g. "Banks", "BNK") or its
@@ -499,7 +513,7 @@ ANNOUNCEMENTS: dict[str, tuple[str, str]] = {
 }
 
 
-@mcp.tool(annotations=READ_ONLY)
+@cse_tool("Announcements")
 async def get_announcements(
     category: Literal["corporate", "financial", "non_compliance", "new_listings", "buy_in_board", "circulars", "directives"] = "corporate",
     query: str = "",

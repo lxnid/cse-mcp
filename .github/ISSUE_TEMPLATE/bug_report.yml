@@ -1,0 +1,25 @@
+name: 🐛 Bug report
+description: A tool errors, returns wrong data, or won't install
+labels: [bug]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Which tool or install step?
+      placeholder: e.g. get_stock, or installing the .mcpb in Claude Desktop
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: Include the exact error message if there is one.
+    validations:
+      required: true
+  - type: input
+    id: setup
+    attributes:
+      label: Setup
+      placeholder: e.g. Claude Desktop 1.x on macOS, cse-mcp 0.1.0
+    validations:
+      required: true
