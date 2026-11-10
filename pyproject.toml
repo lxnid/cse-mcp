@@ -1,0 +1,39 @@
+[project]
+name = "cse-mcp"
+version = "0.1.0"
+description = "MCP server that gives Claude (and other AIs) live Colombo Stock Exchange market data."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "lxnid" }]
+requires-python = ">=3.12"
+keywords = ["mcp", "colombo-stock-exchange", "cse", "sri-lanka", "stocks", "claude", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=2.3,<3",
+]
+
+[project.scripts]
+cse-mcp = "cse_mcp.server:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["live: hits the real cse.lk API (run with: uv run pytest -m live)"]
+addopts = "-m 'not live'"
